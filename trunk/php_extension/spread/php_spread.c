@@ -12,7 +12,7 @@
   | obtain it through the world-wide-web, please send a note to          |
   | license@php.net so we can mail you a copy immediately.               |
   +----------------------------------------------------------------------+
-  | Author: Yanbin Zhu <yanbin@staff.sina.com.cn>                        |
+  | Author:                                                              |
   +----------------------------------------------------------------------+
 */
 
@@ -42,6 +42,7 @@
 # endif
 #endif
 
+
 #include "php.h"
 #include "php_globals.h"
 #include "php_ini.h"
@@ -51,6 +52,13 @@
 #include <sys/types.h>
 #include <unistd.h>
 
+#ifdef ZEND_ENGINE_2
+# include "zend_exceptions.h"
+#else
+  /* PHP 4 compat */
+# define OnUpdateLong	OnUpdateInt
+# define E_STRICT		E_NOTICE
+#endif
 
 ZEND_DECLARE_MODULE_GLOBALS(spread)
 
@@ -104,12 +112,12 @@ ZEND_GET_MODULE(spread)
 /* {{{ PHP_INI
  */
 PHP_INI_BEGIN()
-	STD_PHP_INI_BOOLEAN("spread.allow_persistent",	"1",	PHP_INI_SYSTEM,		OnUpdateInt,		allow_persistent,	zend_spread_globals,		spread_globals)
-    STD_PHP_INI_ENTRY("spread.connect_timeout",		"60",	PHP_INI_ALL,		OnUpdateInt,		connect_timeout, 	zend_spread_globals,		spread_globals)
+	STD_PHP_INI_BOOLEAN("spread.allow_persistent",	"1",	PHP_INI_SYSTEM,		OnUpdateLong,		allow_persistent,	zend_spread_globals,		spread_globals)
+    STD_PHP_INI_ENTRY("spread.connect_timeout",		"60",	PHP_INI_ALL,		OnUpdateLong,		connect_timeout, 	zend_spread_globals,		spread_globals)
     STD_PHP_INI_ENTRY("spread.default_spread_name", "4803@localhost", PHP_INI_ALL, OnUpdateString, default_spread_name, zend_spread_globals, spread_globals)
     STD_PHP_INI_ENTRY("spread.default_spread_private_name", "spread", PHP_INI_ALL, OnUpdateString, default_spread_private_name, zend_spread_globals, spread_globals)
-    STD_PHP_INI_ENTRY("spread.default_service_type", "2", PHP_INI_ALL, OnUpdateInt, default_service_type, zend_spread_globals, spread_globals)
-    STD_PHP_INI_ENTRY("spread.default_mess_type", "1", PHP_INI_ALL, OnUpdateInt, default_mess_type, zend_spread_globals, spread_globals)
+    STD_PHP_INI_ENTRY("spread.default_service_type", "2", PHP_INI_ALL, OnUpdateLong, default_service_type, zend_spread_globals, spread_globals)
+    STD_PHP_INI_ENTRY("spread.default_mess_type", "1", PHP_INI_ALL, OnUpdateLong, default_mess_type, zend_spread_globals, spread_globals)
 PHP_INI_END()
 /* }}} */
 
