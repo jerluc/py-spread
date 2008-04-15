@@ -19,6 +19,7 @@ class Spread:
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.sock.connect((self.sp_ip,self.sp_port))
         self.private_name = None
+        self.group = None
     
     def socket_send(self, head):
         self.sock.send(head)
@@ -65,9 +66,10 @@ class Spread:
         send_head = protocol_Create('JOIN_MESS',self.private_name,groups)
         self.socket_send(send_head)
         self.socket_send(struct.pack('!0s',''))
+        self.group = groups
     
-    def leave(self, groups):
-        send_head = protocol_Create('LEAVE_MESS',self.private_name,groups)
+    def leave(self):
+        send_head = protocol_Create('LEAVE_MESS',self.private_name,self.group)
         self.socket_send(send_head)
         self.socket_send(struct.pack('!0s',''))
 
@@ -77,6 +79,7 @@ class Spread:
         self.socket_send(struct.pack('!0s',''))
         self.sock = None
         self.private_name = None
+        self.group = None
 
 if __name__ == '__main__':
     sp_host = '3333@10.55.37.127'
@@ -85,8 +88,10 @@ if __name__ == '__main__':
     sp.connect()
     group = ['purge_gz']
     sp.join(group)
-    print sp.receive()
-    sp.leave(group)
+    for i in xrange(0,100):
+        print sp.receive()
+        print i
+    sp.leave()
     sp.disconnect()
     
     #data = '2008-04-16 00:00:00|1206979200|editarticle|172.16.175.200|/rss/zcwxs.xml%s\n'
