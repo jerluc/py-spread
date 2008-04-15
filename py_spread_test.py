@@ -11,6 +11,7 @@ def sp():
 	sock.send(p)
 	msg = sock.recv(1)
 	l = ord(msg)
+	print l
 	msg = sock.recv(l)
 	buffer = [ord(m) for m in msg]
 	sendAuthMethod = [0,]*90
@@ -31,6 +32,7 @@ def sp():
 	grouplen = ord(msg)
 	msg = sock.recv(grouplen)
 	print msg
+'''
 	data_len = '2008-04-12 00:00:00|1206979200|editarticle|172.16.175.200|/rss/zcwxs.xml\n'
 	#send message 
 	tag = '!4B32s12B32s'
@@ -70,6 +72,7 @@ def sp():
 	p = struct.pack('!0s','')
 	#print Rec.spread_Rec(sock)
 	sock.close()
+'''
 
 if __name__ == '__main__':
 	 import struct

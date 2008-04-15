@@ -71,8 +71,8 @@ if __name__ == '__main__':
     sp_name = 'junyw'
     sp = Spread(sp_name, sp_host)
     sp.connect()
+    group = ['spreadtest']
+    data = '2008-04-16 00:00:00|1206979200|editarticle|172.16.175.200|/rss/zcwxs.xml%s\n'
     for i in xrange(0,100):
-        group = ['spreadtest']
-        data = '2008-04-16 00:00:00|1206979200|editarticle|172.16.175.200|/rss/zcwxs.xml%s\n'%i
         sp.multicast(group, data)
 
