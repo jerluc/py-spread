@@ -18,7 +18,7 @@ class Spread:
         self.sp_ip = host_list[1]
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.sock.connect((self.sp_ip,self.sp_port))
-        self.private_name = ''
+        self.private_name = None
     
     def socket_send(self, head):
         self.sock.send(head)
@@ -36,13 +36,15 @@ class Spread:
     		sendAuthMethod[i] = buffer[i]
     	msg_auth = struct.pack('!90B',*sendAuthMethod)
     	self.socket_send(msg_auth)
-    	msg = self.socket_rec()
+    	self.socket_rec()
     	#read Version
     	majorVersion = self.socket_rec()
     	majorVersion = ord(majorVersion)
     	minorVersion = self.socket_rec()
     	minorVersion = ord(minorVersion)
     	patchVersion = self.socket_rec()
+    	patchVersion = ord(patchVersion)
+    	#print majorVersion,minorVersion,patchVersion
     	#read group
     	private_name = self.sock.recv(ord(self.socket_rec()))
     	self.private_name = private_name
@@ -54,25 +56,40 @@ class Spread:
     	msg = struct.pack('!%ss'%data_len,message)
     	self.socket_send(msg)
     
-    def join(groups):
-        """docstring for join"""
-        pass
+    def receive(self):
+        recv_head = self.socket_rec(48)
+        self.socket_rec(32)
+    	return self.socket_rec(ord(recv_head[-4]))#message
+
+    def join(self, groups):
+        send_head = protocol_Create('JOIN_MESS',self.private_name,groups)
+        self.socket_send(send_head)
+        self.socket_send(struct.pack('!0s',''))
     
-    def leave(self):
-        """docstring for leave"""
-        pass
-    
+    def leave(self, groups):
+        send_head = protocol_Create('LEAVE_MESS',self.private_name,groups)
+        self.socket_send(send_head)
+        self.socket_send(struct.pack('!0s',''))
+
     def disconnect(self):
-        """docstring for disconnect"""
-        pass
+        send_head = protocol_Create('KILL_MESS',self.private_name,[self.private_name])
+        self.socket_send(send_head)
+        self.socket_send(struct.pack('!0s',''))
+        self.sock = None
+        self.private_name = None
 
 if __name__ == '__main__':
-    sp_host = '3333@10.55.37.105'
+    sp_host = '3333@10.55.37.127'
     sp_name = 'junyw'
     sp = Spread(sp_name, sp_host)
     sp.connect()
-    group = ['spreadtest']
-    data = '2008-04-16 00:00:00|1206979200|editarticle|172.16.175.200|/rss/zcwxs.xml%s\n'
-    for i in xrange(0,100):
-        sp.multicast(group, data)
+    group = ['purge_gz']
+    sp.join(group)
+    print sp.receive()
+    sp.leave(group)
+    sp.disconnect()
+    
+    #data = '2008-04-16 00:00:00|1206979200|editarticle|172.16.175.200|/rss/zcwxs.xml%s\n'
+    #for i in xrange(0,100):
+        #sp.multicast(group, data)
 
