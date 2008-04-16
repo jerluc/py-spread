@@ -51,6 +51,7 @@ class Spread:
     	self.private_name = private_name
     
     def multicast(self, groups, message):
+        print groups, message
         data_len = len(message)
         send_head = protocol_Create('SEND_MESS',self.private_name,groups,data_len)
         self.socket_send(send_head)
