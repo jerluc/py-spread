@@ -19,6 +19,7 @@ Install
 Py-Spread需要以下软件：
  * python（2.5）
  * setuptool
+ * spread 4.0.0+
 
 1.安装py-spared
 
