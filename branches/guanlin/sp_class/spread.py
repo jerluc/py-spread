@@ -7,7 +7,7 @@ Created by  on 2008-04-14.
 Copyright (c) 2008 __MyCompanyName__. All rights reserved.
 """
 import socket,struct
-from untils import protocol_Connect,protocol_Create
+from untils import protocol_Connect,protocol_Create,val_g
 from sp_error import SpreadException
 
 class Spread:
@@ -73,8 +73,9 @@ class Spread:
         recv_head = self.socket_rec(48)
         self.socket_rec(32)
     	return self.socket_rec(ord(recv_head[-4]))#message
-
-    def join(self, groups):
+    
+    def join(self, groups=[]):
+        val_g(groups)
         send_head = protocol_Create('JOIN_MESS',self.private_name,groups)
         self.socket_send(send_head)
         self.socket_send(struct.pack('!0s',''))
@@ -102,8 +103,7 @@ if __name__ == '__main__':
     group = ['purge_gz']
     sp.join(group)
     for i in xrange(0,10):
-        print sp.receive()
-        print i
+        print i,':',sp.receive()
     sp.leave()
     sp.disconnect()
     
