@@ -38,6 +38,20 @@ def toB(buffer,i):
 def protocol_Connect(connect_name):
     name_len = len(connect_name)
     return struct.pack('!5B%ss'%name_len, 4, 0, 0, 0, name_len, connect_name)
+    def join_err(self,x):
+        if x<36 or x>126:
+            raise SpreadException(-14)
+    
+def group_len(g):
+    if g >= 32:
+        raise SpreadException(-14)
+
+def val_g(groups):
+    try:
+        val_groups = lambda g:[[lambda b:self.join_err(ord(c)) for c in b] or self.group_len(b) for b in g]
+        val_groups(groups)
+    except:
+        raise SpreadException(-14)
 
 if __name__ == '__main__':
     p = protocol_Create('JOIN_MESS','#test#machine1',['spreadtest',])
