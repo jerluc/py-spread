@@ -35,14 +35,14 @@ class Spread:
     	authlen = ord(msg)
     	if authlen == -1 or authlen >= 128:
     	    raise SpreadException(authlen)
-    	buffer = [ord(m) for m in self.socket_rec()]
+    	buffer = [ord(m) for m in self.socket_rec(authlen)]
     	sendAuthMethod = [0,]*90
     	for i in xrange(4):
     		sendAuthMethod[i] = buffer[i]
     	msg_auth = struct.pack('!90B',*sendAuthMethod)
     	self.socket_send(msg_auth)
     	#checkAccept
-    	accept = self.socket_rec()
+    	accept = ord(self.socket_rec())
     	if accept == -1 or accept != 1:
     	    raise SpreadException(accept)
     	#read Version
@@ -95,12 +95,13 @@ class Spread:
 
 if __name__ == '__main__':
     sp_host = '3333@10.55.37.127'
-    sp_name = 'junyw'
+    sp_name = 'junyw123'
     sp = Spread(sp_name, sp_host)
     sp.connect()
+    sp.private_name
     group = ['purge_gz']
     sp.join(group)
-    for i in xrange(0,100):
+    for i in xrange(0,10):
         print sp.receive()
         print i
     sp.leave()
