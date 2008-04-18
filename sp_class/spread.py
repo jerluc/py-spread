@@ -8,6 +8,7 @@ Copyright (c) 2008 __MyCompanyName__. All rights reserved.
 """
 import socket,struct
 from untils import protocol_Connect,protocol_Create
+from sp_error import SpreadException
 
 class Spread:
     def __init__(self, sp_name, sp_host):
@@ -31,13 +32,19 @@ class Spread:
         msg_connect = protocol_Connect(self.sp_name)
         self.socket_send(msg_connect)
     	msg = self.socket_rec()
-    	buffer = [ord(m) for m in self.socket_rec(ord(msg))]
+    	authlen = ord(msg)
+    	if authlen == -1 or authlen >= 128:
+    	    raise SpreadException(authlen)
+    	buffer = [ord(m) for m in self.socket_rec()]
     	sendAuthMethod = [0,]*90
     	for i in xrange(4):
     		sendAuthMethod[i] = buffer[i]
     	msg_auth = struct.pack('!90B',*sendAuthMethod)
     	self.socket_send(msg_auth)
-    	self.socket_rec()
+    	#checkAccept
+    	accept = self.socket_rec()
+    	if accept == -1 or accept != 1:
+    	    raise SpreadException(accept)
     	#read Version
     	majorVersion = self.socket_rec()
     	majorVersion = ord(majorVersion)
@@ -45,9 +52,14 @@ class Spread:
     	minorVersion = ord(minorVersion)
     	patchVersion = self.socket_rec()
     	patchVersion = ord(patchVersion)
-    	#print majorVersion,minorVersion,patchVersion
+    	version = (majorVersion | minorVersion | patchVersion)
+    	if version == -1:
+    	    raise SpreadException(version)
     	#read group
-    	private_name = self.sock.recv(ord(self.socket_rec()))
+    	group_len = ord(self.socket_rec())
+    	if group_len == -1:
+    	    raise SpreadException(group_len)
+    	private_name = self.sock.recv(group_len)
     	self.private_name = private_name
     
     def multicast(self, groups, message):
