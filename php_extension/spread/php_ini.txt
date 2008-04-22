@@ -1,8 +1,0 @@
-[spread]
-extension="spread.so"
-spread.allow_persistent = On
-spread.connect_timeout = "60"
-spread.default_mess_type = "1"
-spread.default_service_type = "2"
-spread.default_spread_name = "4803@localhost"
-spread.default_spread_private_name = "spread"
