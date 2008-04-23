@@ -45,7 +45,6 @@ class Spread:
     	minorVersion = ord(minorVersion)
     	patchVersion = self.socket_rec()
     	patchVersion = ord(patchVersion)
-    	#print majorVersion,minorVersion,patchVersion
     	#read group
     	private_name = self.sock.recv(ord(self.socket_rec()))
     	self.private_name = private_name
@@ -84,12 +83,12 @@ class Spread:
 
 if __name__ == '__main__':
     sp_host = '3333@10.55.37.127'
-    sp_name = 'junyw'
+    sp_name = 'test'
     sp = Spread(sp_name, sp_host)
     sp.connect()
     group = ['purge_gz']
     sp.join(group)
-    for i in xrange(0,100):
+    for i in xrange(0,4):
         print sp.receive()
         print i
     sp.leave()

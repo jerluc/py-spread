@@ -7,8 +7,9 @@ Created by  on 2008-04-14.
 Copyright (c) 2008 __MyCompanyName__. All rights reserved.
 """
 import socket,struct
-from untils import protocol_Connect,protocol_Create,val_g
+from untils import protocol_Connect,protocol_Create,val_g,connect_require
 from sp_error import SpreadException
+socket.timeout = 3
 
 class Spread:
     def __init__(self, sp_name, sp_host):
@@ -18,7 +19,11 @@ class Spread:
         self.sp_port = int(host_list[0])
         self.sp_ip = host_list[1]
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.sock.connect((self.sp_ip,self.sp_port))
+        try:
+            self.sock.connect((self.sp_ip,self.sp_port))
+        except:
+            self.sock = None
+            raise SpreadException(-2)
         self.private_name = None
         self.group = None
     
@@ -70,7 +75,10 @@ class Spread:
     	self.socket_send(msg)
     
     def receive(self):
-        recv_head = self.socket_rec(48)
+        while True:
+            recv_head = self.socket_rec(48)
+            if len(recv_head) == 48:
+                break
         self.socket_rec(32)
     	return self.socket_rec(ord(recv_head[-4]))#message
     
@@ -102,11 +110,10 @@ if __name__ == '__main__':
     sp.private_name
     group = ['purge_gz']
     sp.join(group)
-    for i in xrange(0,10):
+    for i in xrange(0,1):
         print i,':',sp.receive()
     sp.leave()
     sp.disconnect()
-    
     #data = '2008-04-16 00:00:00|1206979200|editarticle|172.16.175.200|/rss/zcwxs.xml%s\n'
     #for i in xrange(0,100):
         #sp.multicast(group, data)
