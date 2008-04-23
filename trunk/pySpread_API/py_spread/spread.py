@@ -118,7 +118,10 @@ class Spread:
     
         >>> sp.receive()
         """
-        recv_head = self.socket_rec(48)
+        while True:
+            recv_head = self.socket_rec(48)
+            if len(recv_head) == 48:
+                break
         self.socket_rec(32)
     	return self.socket_rec(ord(recv_head[-4]))#message
     
